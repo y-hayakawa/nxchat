@@ -1,0 +1,22 @@
+FirstResponder = {ACTIONS = {}; SUPERCLASS = Object; };
+Controller = {
+    ACTIONS = {
+	"appDidInit:" = "appDidInit:"; 
+	"saveLog:" = "saveLog:"; 
+	"saveLogAs:" = "saveLogAs:"; 
+	"sendPromptToAssistant:" = "sendPromptToAssistant:"; 
+	"setServerInfo:" = "setServerInfo:"; 
+	"showInfoPanel:" = "showInfoPanel:"; 
+	"showPrefPanel:" = "showPrefPanel:"; 
+    }; 
+    OUTLETS = {
+	assistantScrollView = assistantScrollView; 
+	infoPanel = infoPanel; 
+	ipAddressTextField = ipAddressTextField; 
+	mainWindow = mainWindow; 
+	portNumberTextField = portNumberTextField; 
+	prefPanel = prefPanel; 
+	promptScrollView = promptScrollView; 
+    }; 
+    SUPERCLASS = Object; 
+};

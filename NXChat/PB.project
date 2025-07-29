@@ -1,0 +1,29 @@
+INSTALLDIR = "$(HOME)/Apps";
+DOCICONFILES = ();
+APPICON = nxchat.tiff;
+GENERATEMAIN = YES;
+FILESTABLE = {
+    C_FILES = (jconv.c);
+    OTHER_LIBS = (Foundation_s, Media_s, NeXT_s);
+    CLASSES = (Controller.m, EmacsText.m, NXChatWindow.m);
+    OTHER_RESOURCES = ();
+    OTHER_SOURCES = (Makefile.preamble, Makefile, Makefile.postamble);
+    INTERFACES = (InfoPanel.nib, NXChat.nib, PrefPanel.nib);
+    H_FILES = (Controller.h, EmacsText.h, jconv.h, NXChatWindow.h);
+    IMAGES = (hayakawa.tiff, openai.tiff);
+    OTHER_LINKED = ();
+    M_FILES = (NXChat_main.m);
+};
+APPCLASS = Application;
+MAINNIB = NXChat;
+DOCEXTENSIONS = ();
+PROJECTTYPE = Application;
+PROJECTVERSION = 1.1;
+LOCALIZABLE_FILES = {
+    PrefPanel.nib;
+    InfoPanel.nib;
+    NXChat.nib;
+};
+PROJECTNAME = NXChat;
+SYSTEMEXTENSIONS = ();
+LANGUAGE = Japanese;
