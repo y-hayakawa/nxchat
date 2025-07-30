@@ -39,6 +39,8 @@ On the next launch, the settings will take effect.
 
 Type a prompt in the lower panel of the window.
 
+Prompts that begin with /system are interpreted as system prompts, which cause the server-side chat history to be reset.
+
 Click the Send button or press Command + Return.
 
 After a short wait, the response from the server will appear in the upper panel.
@@ -49,6 +51,10 @@ You can also save the chat history to a file.
 This software is experimental and not guaranteed to work reliably.
 
 It was developed on the Japanese version of NEXTSTEP 3.3 (NEXTSTEP3.3J), so some adjustments may be needed to build it on other language environments.
+
+Multibyte characters (UTF-8) sent from the server are converted to Japanese EUC-JP encoding on the client side. If a corresponding character cannot be found during conversion, a space character is used as a fallback.
+
+
 
 ## Acknowledgments
 Special thanks to Julie Zelenski for the EmacsText.h and EmacsText.m code, which enables Emacs-style key bindings in the prompt input area.
