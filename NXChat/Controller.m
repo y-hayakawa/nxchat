@@ -78,7 +78,9 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
     file_path = NULL ;
     file_basename = (char *)malloc(1024) ;
 
+    [assistantScrollView setDynamicScrolling:YES];
     [mainWindow makeFirstResponder:[promptScrollView docView]] ;
+
 
     return self ;
 }

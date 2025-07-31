@@ -37,7 +37,6 @@ char* dbg_markdown_to_rtf(const char *md);
     [self setMinSize:&r.size];
     r.size.height = 1.0e30;
     [self setMaxSize:&r.size];
-
     [self setSelectable:YES] ;
     [self setEditable:NO] ;
     [self setRetainedWhileDrawing:YES] ;
