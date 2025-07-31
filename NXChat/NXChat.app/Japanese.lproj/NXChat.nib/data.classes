@@ -1,5 +1,6 @@
 EmacsText = {ACTIONS = {}; OUTLETS = {}; SUPERCLASS = Text; };
 NXChatWindow = {ACTIONS = {}; OUTLETS = {sendButton = sendButton; }; SUPERCLASS = Window; };
+MDText = {ACTIONS = {}; OUTLETS = {}; SUPERCLASS = Text; };
 FirstResponder = {ACTIONS = {}; SUPERCLASS = Object; };
 Controller = {
     ACTIONS = {

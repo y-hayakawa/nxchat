@@ -1,13 +1,14 @@
 /*
-  NXChat --- an AI assistant for NEXTSTEP
-
+  NXChat -- an AI assistant for NEXTSTEP
   Yoshinori Hayakawa
-  2025-07-29
+  2025-07-31
+  Version 0.2
  */
 
 
 #import "Controller.h"
 
+#import "MDText.h"
 #import "EmacsText.h"
 
 #include <stdio.h>
@@ -21,8 +22,10 @@
 #include <ctype.h>
 
 #import <foundation/NSException.h>
+#import <foundation/NSUtilities.h>
 
 #import <mach/cthreads.h>
+#import <objc/objc-runtime.h>
 
 #include "jconv.h"
 
@@ -56,17 +59,6 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
 - appDidInit:sender
 {
     const char *ipaddr, *port ;
-    NXRect frameRect ;
-
-#if 0
-    // swap docview
-    normalText = [promptScrollView docView] ;
-    [normalText getFrame:&frameRect] ;
-    emacsText = [[EmacsText alloc] initFrame:&frameRect
-                                   text:NULL
-                                   alignment:NX_LEFTALIGN] ;
-    [promptScrollView setDocView:emacsText] ;
-#endif
 
     ipaddr = NXGetDefaultValue("NXChat","ServerIP") ;
     port = NXGetDefaultValue("NXChat","ServerPort") ;
@@ -85,6 +77,8 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
 
     file_path = NULL ;
     file_basename = (char *)malloc(1024) ;
+
+    [mainWindow makeFirstResponder:[promptScrollView docView]] ;
 
     return self ;
 }
@@ -159,7 +153,7 @@ int inet_aton(const char *cp, struct in_addr *addr) {
 - appendTextToAssistantView:(const char *) string
 {
     id text = [assistantScrollView docView] ;
-    int length = [text byteLength] ;
+    int length ;
     int ret ;
     unsigned char *out_buffer ;
     size_t out_len ;
@@ -171,9 +165,15 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     }
 
     [mainWindow setDocEdited:YES] ;
+#if 0
+    length = [text byteLength] ;
     [text setSel:length :length] ;
     [text replaceSel:out_buffer] ;
+#else
+    [text appendAsMarkDown:out_buffer] ;
+#endif
     [text scrollSelToVisible] ;
+
     [text display] ;
 
     free(out_buffer) ;
@@ -192,6 +192,8 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     id text = [promptScrollView docView] ;
 
     length = [text byteLength] ;
+
+    if (length==0) return self ;
 
     buffer = (char *) malloc(sizeof(char)*length+1) ;
 
@@ -324,7 +326,7 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     }
     
     panel = [SavePanel new] ;
-    [panel setRequiredFileType: "txt"] ;
+    [panel setRequiredFileType: "rtf"] ;
     if ([panel runModalForDirectory:dir file:file_basename]) {
         id res ;
         const char *filename = [panel filename] ;
@@ -349,7 +351,8 @@ int inet_aton(const char *cp, struct in_addr *addr) {
         return self ;
     }
     theStream = NXOpenFile(fd,NX_WRITEONLY) ;
-    [text writeText:theStream];
+    // [text writeText:theStream];
+    [text writeRichText:theStream];
     NXClose(theStream) ;
     close(fd) ;
     return self ;

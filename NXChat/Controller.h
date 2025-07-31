@@ -1,3 +1,10 @@
+/*
+  NXChat -- an AI assistant for NEXTSTEP
+  Yoshinori Hayakawa
+  2025-07-31
+  Version 0.2
+ */
+
 
 #import <appkit/appkit.h>
 
@@ -12,9 +19,6 @@
 
     id ipAddressTextField ;
     id portNumberTextField ;
-
-    id emacsText ;
-    id normalText ;
 
     int sockfd ;
     int server_port ;
