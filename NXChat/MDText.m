@@ -55,7 +55,7 @@ char* dbg_markdown_to_rtf(const char *md);
         return self;
     }
 #ifdef KANJI
-    NXPrintf(buffer,"{\\rtf0\\ansi\\deff0{\\fonttbl{{\\f0\\fnil GothicBBBHelvetica;}{\\f1\\fnil FixedGothicBBBHelvetica;}}}\n") ;
+    NXPrintf(buffer,"{\\rtf0\\ansi\\deff0{\\fonttbl{{\\f0\\fnil GothicBBBHelvetica;}{\\f1\\fnil FixedGothicBBBCourier;}}}\n") ;
 #else
     NXPrintf(buffer,"{\\rtf0\\ansi\\deff0{\\fonttbl{{\\f0\\fnil Helvetica;}{\\f1\\fnil Courier;}}}\n") ;
 #endif
