@@ -328,7 +328,7 @@ char* markdown_to_rtf(const char *md) {
                 in_code_block = NO;
                 p = t + 3;
                 if (*p == '\n') ++p;
-                len += snprintf(rtf + len, bufsize - len, "\n\\pard\\li360\\fi0\n");
+                len += snprintf(rtf + len, bufsize - len, "\n\\pard\\li0\\fi0\n");
                 continue;
             }
         }
