@@ -230,7 +230,7 @@ static const char* process_inline_formatting(const char *p,
     /* 1) bold+italic: ***text*** or ___text___ */
     if (strncmp(p,"***",3)==0 || strncmp(p,"___",3)==0) {
         marker = *p;  end = p+3;
-        while (*end && !(end[0]==marker && end[1]==marker && end[2]==marker)) end++;
+        while (*end && *end!='\n' && !(end[0]==marker && end[1]==marker && end[2]==marker)) end++;
         if (*end) {
             *len += snprintf(rtf + *len, bufsize - *len, "\\b\\i ");
             for (r=p+3; r<end; r++) emit_escaped_char(rtf, len, bufsize, *r);
@@ -242,7 +242,7 @@ static const char* process_inline_formatting(const char *p,
     /* 2) bold: **text** or __text__ */
     if (strncmp(p,"**",2)==0 || strncmp(p,"__",2)==0) {
         marker = *p;  end = p+2;
-        while (*end && !(end[0]==marker && end[1]==marker)) end++;
+        while (*end && *end!='\n' && !(end[0]==marker && end[1]==marker)) end++;
         if (*end) {
             *len += snprintf(rtf + *len, bufsize - *len, "\\b ");
             for (r=p+2; r<end; r++) emit_escaped_char(rtf, len, bufsize, *r);
@@ -255,7 +255,7 @@ static const char* process_inline_formatting(const char *p,
     if (((*p=='*') && strncmp(p,"**",2)!=0) ||
         ((*p=='_') && strncmp(p,"__",2)!=0)) {
         marker = *p;  end = p+1;
-        while (*end && *end!=marker) end++;
+        while (*end && *end!='\n' && *end!=marker) end++;
         if (*end==marker) {
             *len += snprintf(rtf + *len, bufsize - *len, "\\i ");
             for (r=p+1; r<end; r++) emit_escaped_char(rtf, len, bufsize, *r);
