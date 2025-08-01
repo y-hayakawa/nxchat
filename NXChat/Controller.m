@@ -72,15 +72,14 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
     if ([self connect]) {
         cthread_fork((cthread_fn_t)message_receiver ,(void *)self) ;
     } else {
-        NXRunAlertPanel([NXApp appName],"Cannot connect to server. Please check the settings in Preferences.",0,0,0,0) ;
+        NXRunAlertPanel([NXApp appName],"Cannot connect to the server. Please verify that the server is running and check the settings in Preferences.",0,0,0,0) ;
     }
 
     file_path = NULL ;
     file_basename = (char *)malloc(1024) ;
 
     [assistantScrollView setDynamicScrolling:YES];
-    [mainWindow makeFirstResponder:[promptScrollView docView]] ;
-
+    [[promptScrollView docView] setSel:0 :0] ;
 
     return self ;
 }
@@ -174,7 +173,6 @@ int inet_aton(const char *cp, struct in_addr *addr) {
 #else
     [text appendAsMarkDown:out_buffer] ;
 #endif
-    [text scrollSelToVisible] ;
 
     [text display] ;
 
@@ -212,7 +210,7 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     
     n = write(sockfd, out_buffer, out_len);
     if (n < 0) {
-        NXRunAlertPanel([NXApp appName],"Cannot to send message to server. Please check settings and server\'s status.", 0,0,0,0) ;
+        NXRunAlertPanel([NXApp appName],"Cannot connect to the server. Please verify that the server is running.", 0,0,0,0) ;
         perror("write to socket");
         free(out_buffer) ;
         free(buffer) ;
