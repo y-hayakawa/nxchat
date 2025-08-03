@@ -105,11 +105,11 @@ char* dbg_markdown_to_rtf(const char *md);
     NXCloseMemory(buffer, NX_FREEBUFFER); 
     free(rtf) ;
 
+    // [self calcLine] ;
+    // [self sizeToFit] ;
+
     length = [self byteLength];
     [self setSel:length:length] ;
-
-    [self calcLine] ;
-    [self sizeToFit] ;
 
     [self scrollSelToVisible] ;
 
@@ -280,7 +280,7 @@ char* markdown_to_rtf(const char *md) {
     /* RTF header */
     len += snprintf(rtf + len, bufsize - len,
         "{\\rtf1\\ansi\\deff0"
-        "{\\fonttbl{\\f0\\fnil GothicBBBHelvetica;}{\\f1\\fnil FixedGothicBBBHelvetica;}}"
+        "{\\fonttbl{\\f0\\fnil GothicBBBHelvetica;}{\\f1\\fnil FixedGothicBBBCourier;}}"
         "\\fs24\\par\n");
 #endif
 

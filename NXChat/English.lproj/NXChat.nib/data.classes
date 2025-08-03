@@ -17,6 +17,7 @@ Controller = {
 	infoPanel = infoPanel; 
 	ipAddressTextField = ipAddressTextField; 
 	mainWindow = mainWindow; 
+	messageTextField = messageTextField; 
 	portNumberTextField = portNumberTextField; 
 	prefPanel = prefPanel; 
 	promptScrollView = promptScrollView; 

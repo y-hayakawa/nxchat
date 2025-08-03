@@ -176,6 +176,10 @@ int inet_aton(const char *cp, struct in_addr *addr) {
 
     [text display] ;
 
+    [[promptScrollView docView] setSel:0:0] ;
+
+    [messageTextField setStringValue:""] ;
+
     free(out_buffer) ;
 
     return self ;
@@ -222,6 +226,8 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     [text replaceSel:""] ;
     [text scrollSelToVisible] ;
     [text display] ;
+
+    [messageTextField setStringValue:"Waiting for server\'s response..."] ;
 
     free(buffer) ;
     free(out_buffer) ;

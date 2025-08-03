@@ -10,18 +10,17 @@
 NAME = NXChat
 
 PROJECTVERSION = 1.1
-JAPANESE = YES
 
-LANGUAGE = Japanese
+LANGUAGE = English
 
 APPICON = nxchat.tiff
 LOCAL_RESOURCES = InfoPanel.nib NXChat.nib PrefPanel.nib
 
 GLOBAL_RESOURCES = hayakawa.tiff openai.tiff
 
-CLASSES = Controller.m EmacsText.m NXChatWindow.m
+CLASSES = Controller.m EmacsText.m MDText.m NXChatWindow.m
 
-HFILES = Controller.h EmacsText.h jconv.h NXChatWindow.h
+HFILES = Controller.h EmacsText.h jconv.h MDText.h NXChatWindow.h
 
 MFILES = NXChat_main.m
 

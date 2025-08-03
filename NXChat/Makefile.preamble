@@ -15,6 +15,9 @@
 ## -L flags here.  To change the default flags that get passed to ${CC} 
 ## (e.g. change -O to -O2), see Makefile.postamble.
 
+JAPANESE=NO
+ENGLISH=YES
+
 # Flags passed to compiler (in addition to -g, -O, etc)
 OTHER_CFLAGS = 
 # Flags passed to ld (in addition to -ObjC, etc.)

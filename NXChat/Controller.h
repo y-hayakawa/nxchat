@@ -13,6 +13,7 @@
     id mainWindow ;
     id assistantScrollView ;
     id promptScrollView ;
+    id messageTextField ;
 
     id prefPanel ;
     id infoPanel ;
