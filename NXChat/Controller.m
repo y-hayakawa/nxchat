@@ -380,8 +380,7 @@ void *my_memchr(const void *s, int c, size_t n)
     return NULL;
 }
 
-// MAX 100K bytes
-#define BUFSIZE 100000
+#define BUFSIZE 65536
 
 static void message_receiver(void *arg)
 {
@@ -415,11 +414,11 @@ static void message_receiver(void *arg)
                 save = recvbuf[processed + msglen];
                 recvbuf[processed + msglen] = 0;
                 sendlen += msglen - 1 ; // msglen includes NULL
-                if (sendlen > buffsize/2) {
-                    buffsize *= 2 ;
-                    sendbuf = (char *) realloc(sendbuf,buffsize) ;
+                if (sendlen > buffsize) {
+                    buffsize = sendlen + BUFSIZE ;
+                    sendbuf = (char *) realloc(sendbuf, buffsize) ;
                 }
-                strcat(sendbuf, recvbuf + processed) ;
+                strncat(sendbuf, recvbuf + processed, msglen) ;
                 recvbuf[processed + msglen] = save;
                 processed += (msglen + 1) ;
             } else {
