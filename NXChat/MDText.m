@@ -88,22 +88,23 @@ char* dbg_markdown_to_rtf(const char *md);
 #else
     [self writeRichText:buffer]; 
 #endif
+
     NXSeek(buffer,-2L,NX_FROMEND) ;
     rtf = markdown_to_rtf(md_string) ;
     // rtf = dbg_markdown_to_rtf(md_string) ;
     //// fputs(rtf,stdout) ;
     count = strlen(rtf) ;
+
     NXWrite(buffer, rtf, count) ;
     NXPrintf(buffer,"}\n") ;
     NXSeek(buffer,0L,NX_FROMSTART);
+
 #ifdef PLAIN_TEXT
     [self readText:buffer];
 #else
     [self readRichText:buffer];
 #endif
     NXFlush(buffer) ;
-    NXCloseMemory(buffer, NX_FREEBUFFER); 
-    free(rtf) ;
 
     // [self calcLine] ;
     // [self sizeToFit] ;
@@ -112,6 +113,9 @@ char* dbg_markdown_to_rtf(const char *md);
     [self setSel:length:length] ;
 
     [self scrollSelToVisible] ;
+
+    NXCloseMemory(buffer, NX_FREEBUFFER); 
+    free(rtf) ;
 
     return self ;
 }

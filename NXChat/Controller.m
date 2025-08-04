@@ -1,8 +1,8 @@
 /*
   NXChat -- an AI assistant for NEXTSTEP
   Yoshinori Hayakawa
-  2025-07-31
-  Version 0.2
+  2025-08-04
+  Version 0.21
  */
 
 
@@ -31,6 +31,7 @@
 
 static void message_receiver(void *arg) ;
 
+
 @implementation Controller
 
 void MyTopLevelErrorHandler(NXHandler *errorState)
@@ -53,6 +54,7 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
     } ;
     
     NXRegisterDefaults("NXChat", NXChatDefaults) ;
+
     return self ;
 }
 
@@ -60,15 +62,16 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
 {
     const char *ipaddr, *port ;
 
+    objc_setMultithreaded(YES);
+
     ipaddr = NXGetDefaultValue("NXChat","ServerIP") ;
     port = NXGetDefaultValue("NXChat","ServerPort") ;
-
-    objc_setMultithreaded(YES);
 
     NXSetTopLevelErrorHandler(MyTopLevelErrorHandler);
 
     strcpy(server_ip,ipaddr) ;
     server_port = atoi(port) ;
+
     if ([self connect]) {
         cthread_fork((cthread_fn_t)message_receiver ,(void *)self) ;
     } else {
@@ -145,7 +148,7 @@ int inet_aton(const char *cp, struct in_addr *addr) {
         return NO ;
     }
 
-    printf("Connected to %s:%d\n", server_ip, server_port);
+    fprintf(stderr,"Connected to %s:%d\n", server_ip, server_port);
 
     return YES ;
 }
@@ -364,8 +367,21 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     return self ;
 }
 
+void *my_memchr(const void *s, int c, size_t n)
+{
+    const unsigned char *p = (const unsigned char *)s;
+    unsigned char uc = (unsigned char)c;
+    size_t i ;
+    for (i = 0; i < n; ++i) {
+        if (p[i] == uc) {
+            return (void *)(p + i);
+        }
+    }
+    return NULL;
+}
 
-#define BUFSIZE 100000 
+// MAX 100K bytes
+#define BUFSIZE 100000
 
 static void message_receiver(void *arg)
 {
@@ -373,35 +389,81 @@ static void message_receiver(void *arg)
     int sockfd = [controller sockfd] ;
     int maxfd,n ;
     fd_set read_fds;
+    int processed ;
+    int bufused = 0 ;
     char * recvbuf = (char *) malloc(BUFSIZE) ;
+
+    char * sendbuf = (char *) malloc(BUFSIZE) ;
+    int sendlen ;
+    int buffsize = BUFSIZE ;
 
     // bzero(recvbuf, BUFSIZE) ;
 
+    sendbuf[0] = 0 ;
+    sendlen = 0 ;
     while (1) {
         FD_ZERO(&read_fds);
         FD_SET(sockfd, &read_fds);
         maxfd = sockfd;
 
-        if (select(maxfd + 1, &read_fds, NULL, NULL, NULL) < 0) {
-            perror("select");
-            break;
-        }
-
-        /* Data from server */
-        if (FD_ISSET(sockfd, &read_fds)) {
-            n = read(sockfd, recvbuf, BUFSIZE - 1);
-            if (n < 0) {
-                perror("read from socket");
-                break;
-            } else if (n == 0) {
-                /* Server closed connection */
-                printf("Server closed connection.\n");
+        processed = 0;
+        while (bufused - processed > 0) {
+            char *nul = memchr(recvbuf + processed, '\0', bufused - processed);
+            if (nul) {
+                char save ;
+                int msglen = nul - (recvbuf + processed);
+                save = recvbuf[processed + msglen];
+                recvbuf[processed + msglen] = 0;
+                sendlen += msglen - 1 ; // msglen includes NULL
+                if (sendlen > buffsize/2) {
+                    buffsize *= 2 ;
+                    sendbuf = (char *) realloc(sendbuf,buffsize) ;
+                }
+                strcat(sendbuf, recvbuf + processed) ;
+                recvbuf[processed + msglen] = save;
+                processed += (msglen + 1) ;
+            } else {
                 break;
             }
-            recvbuf[n] = 0 ;
-            [controller appendTextToAssistantView:recvbuf] ;
         }
+
+        if (processed > 0) {
+            if (bufused > processed) {
+                memmove(recvbuf, recvbuf + processed, bufused - processed);
+            }
+            bufused -= processed;
+            processed = 0;
+        }
+
+        if (sendlen > 0 && bufused==0) {
+            id retobj ;
+            retobj = [controller appendTextToAssistantView:sendbuf];
+            sendlen = 0 ;
+            sendbuf[0] = 0 ;
+        }
+
+        if (bufused < BUFSIZE - 1) {
+            if (select(maxfd + 1, &read_fds, NULL, NULL, NULL) < 0) {
+                perror("select");
+                break;
+            }
+            if (FD_ISSET(sockfd, &read_fds)) {
+                n = read(sockfd, recvbuf + bufused, BUFSIZE - 1 - bufused);
+                if (n < 0) {
+                    if (errno == EINTR) continue;
+                    perror("read from socket");
+                    break;
+                } else if (n == 0) {
+                    fprintf(stderr,"Server closed connection.\n");
+                    break;
+                }
+                bufused += n;
+                recvbuf[bufused]=0 ;
+            }
+        }
+
     }
+
     close(sockfd);
     free(recvbuf) ;
     return ;

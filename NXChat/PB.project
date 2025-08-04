@@ -1,3 +1,7 @@
+INSTALLDIR = "$(HOME)/Apps";
+APPICON = nxchat.tiff;
+GENERATEMAIN = YES;
+DOCICONFILES = ();
 FILESTABLE = {
     C_FILES = (jconv.c);
     OTHER_LIBS = (Foundation_s, Media_s, NeXT_s);
@@ -10,14 +14,8 @@ FILESTABLE = {
     OTHER_LINKED = ();
     M_FILES = (NXChat_main.m);
 };
-INSTALLDIR = "$(HOME)/Apps";
-COMPILEROPTIONS = "";
-APPICON = nxchat.tiff;
-GENERATEMAIN = YES;
-DOCICONFILES = ();
 APPCLASS = Application;
 MAINNIB = NXChat;
-LINKEROPTIONS = "";
 DOCEXTENSIONS = ();
 PROJECTTYPE = Application;
 PROJECTVERSION = 1.1;

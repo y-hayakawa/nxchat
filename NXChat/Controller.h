@@ -1,8 +1,8 @@
 /*
   NXChat -- an AI assistant for NEXTSTEP
   Yoshinori Hayakawa
-  2025-07-31
-  Version 0.2
+  2025-08-04
+  Version 0.21
  */
 
 
