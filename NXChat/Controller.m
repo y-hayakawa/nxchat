@@ -413,7 +413,7 @@ static void message_receiver(void *arg)
                 int msglen = nul - (recvbuf + processed);
                 save = recvbuf[processed + msglen];
                 recvbuf[processed + msglen] = 0;
-                sendlen += msglen - 1 ; // msglen includes NULL
+                sendlen += msglen ; // msglen doesn't count NULL
                 if (sendlen > buffsize) {
                     buffsize = sendlen + BUFSIZE ;
                     sendbuf = (char *) realloc(sendbuf, buffsize) ;
