@@ -1,0 +1,30 @@
+Server for NXChat
+
+This Python script relays messages between NXChat and the OpenAI API. Please consult other resources for setting up your Python environment and installing required modules (e.g., openai).
+
+Configure your API key
+Before running the script, set your OpenAI key in the OPENAI_API_KEY environment variable.
+
+Allow your client’s IP
+At the top of the script, add the IP address of your NEXTSTEP client (running NXChat) to the ALLOWED_IPS list.
+
+How it works
+The server takes each message sent by the client, forwards it to OpenAI, and then sends OpenAI’s response back to the client as a single payload.
+
+Null-terminated messages
+Every message sent to NXChat must end with a null character (\0). NXChat will only display a message once it receives this terminator.
+
+Supported commands
+In addition to plain user prompts, the server recognizes these commands:
+
+/system <text>
+ Sets the system prompt.
+
+/recall n
+ Fetches and displays the conversation from n steps ago.
+
+/recall all
+ Fetches and displays the entire conversation history.
+
+/reset
+ Backs up the conversation database and then clears all history.
