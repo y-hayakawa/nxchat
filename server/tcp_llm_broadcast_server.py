@@ -21,8 +21,7 @@ PORT = 12345
 DB_PATH = 'chat_history.db'
 ALLOWED_IPS = {
     '127.0.0.1',  # Localhost
-    '172.31.111.5',
-    '172.31.111.9',
+    '192.168.1.2',
 }
 MAX_PROMPT_LENGTH = 2000  # Adjust as needed
 
@@ -83,7 +82,7 @@ async def broadcast(message: str):
     disconnected = []
     for writer in clients:
         try:
-            writer.write(message.encode() + b"\n\0") # TERMINATED BY NULL
+            writer.write(message.encode() + b"\n\0")
             await writer.drain()
         except Exception:
             disconnected.append(writer)
@@ -138,17 +137,16 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
                     # Send recalled history
                     for msg in items:
                         if msg['role'] == 'user':
-                            writer.write(f"[User]\n{msg['content']}".encode() + b"\n") 
+                            writer.write(f"[User]\n{msg['content']}".encode() + b"\n\0")
                         elif msg['role'] == 'assistant':
-                            writer.write(f"[ChatGPT]\n{msg['content']}".encode() + b"\n\n")
-                        writer.write(b"\0") # TERMINATED BY NULL 
-                        await writer.drain() 
+                            writer.write(f"[ChatGPT]\n{msg['content']}".encode() + b"\n\n\0")
+                    await writer.drain()
                     continue
 
                 # Enforce prompt length limit
                 if len(text) > MAX_PROMPT_LENGTH:
                     warning = f"[SERVER] Prompt too long ({len(text)} chars). Limit is {MAX_PROMPT_LENGTH}."
-                    writer.write(warning.encode() + b"\n\0") # TERMINATED BY NULL
+                    writer.write(warning.encode() + b"\n\0")
                     await writer.drain()
                     continue
 
@@ -210,6 +208,9 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
                 await broadcast(f"[ChatGPT]\n{ai_message}\n\n")
     except Exception as e:
         print(f"Error with {ip}: {e}")
+        warning = f"[SERVER] `{e}`"        
+        writer.write(warning.encode() + b"\n\0")
+        await writer.drain()
     finally:
         print(f"Disconnecting {ip}")
         clients.discard(writer)
