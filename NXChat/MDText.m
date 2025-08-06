@@ -39,7 +39,7 @@ char* dbg_markdown_to_rtf(const char *md);
     [self setMaxSize:&r.size];
     [self setSelectable:YES] ;
     [self setEditable:NO] ;
-    [self setRetainedWhileDrawing:YES] ;
+    // [self setRetainedWhileDrawing:YES] ;
     [self setAutodisplay:YES] ;
 
     [self initRTF:self] ;

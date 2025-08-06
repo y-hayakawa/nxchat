@@ -68,7 +68,7 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
 {
     const char *ipaddr, *port ;
 
-    // objc_setMultithreaded(YES);
+    objc_setMultithreaded(NO);
 
     ipaddr = NXGetDefaultValue("NXChat","ServerIP") ;
     port = NXGetDefaultValue("NXChat","ServerPort") ;
@@ -400,8 +400,14 @@ void *my_memchr(const void *s, int c, size_t n)
     return NULL;
 }
 
+// In AppKit, GUI operations must be performed on a single thread. 
+// However, in versions up to v0.2, there were instances where Views were manipulated 
+// on a separate thread, which occasionally caused hangs. 
+// Starting from v0.3, I revised the implementation to use a DPS handler 
+// to wait for data from the server.
 
 static void socket_handler (int sockfd, void * arg)
+// DPS handler for output from subprocess
 {
     id controller = (Controller *) arg ;
     int n,processed ;
