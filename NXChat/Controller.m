@@ -1,8 +1,8 @@
 /*
   NXChat -- an AI assistant for NEXTSTEP
   Yoshinori Hayakawa
-  2025-08-04
-  Version 0.21
+  2025-08-06
+  Version 0.3
  */
 
 #import "Controller.h"
@@ -28,10 +28,15 @@
 
 #include "jconv.h"
 
-static void message_receiver(void *arg) ;
-
-#define NO_DATA 1
-#define DATA_AVAILABLE 2
+/* socket_hander -------------------------- */
+static void socket_handler(int fd, void *arg) ;
+#define BUFSIZE 65536
+static char * recvbuf ;
+static int bufused ;
+static char * sendbuf ;
+static int sendlen=0 ;
+static int sendbufsize ;
+/* ----------------------------------------- */
 
 @implementation Controller
 
@@ -74,7 +79,13 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
     server_port = atoi(port) ;
 
     if ([self connect]) {
-        cthread_fork((cthread_fn_t)message_receiver ,(void *)self) ;
+        recvbuf = (char *) malloc(BUFSIZE) ;
+        bufused = 0 ;
+        sendbuf = (char *) malloc(BUFSIZE) ;
+        sendbuf[0]=0 ;
+        sendlen = 0 ;
+        sendbufsize = BUFSIZE ;
+        DPSAddFD(sockfd, (DPSFDProc) socket_handler, (id) self, NX_MODALRESPTHRESHOLD);
     } else {
         NXRunAlertPanel([NXApp appName],"Cannot connect to the server. Please verify that the server is running and check the settings in Preferences.",0,0,0,0) ;
     }
@@ -152,6 +163,14 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     fprintf(stderr,"Connected to %s:%d\n", server_ip, server_port);
 
     return YES ;
+}
+
+- disconnect 
+{
+    DPSRemoveFD(sockfd) ;
+    close(sockfd) ;
+    sockfd = -1 ;
+    return self ;
 }
 
 
@@ -381,91 +400,62 @@ void *my_memchr(const void *s, int c, size_t n)
     return NULL;
 }
 
-#define BUFSIZE 65536
 
-static void message_receiver(void *arg)
+static void socket_handler (int sockfd, void * arg)
+// DPS handler for output from subprocess
 {
     id controller = (Controller *) arg ;
-    int sockfd = [controller sockfd] ;
-    int maxfd,n ;
-    fd_set read_fds;
-    int processed ;
-    int bufused = 0 ;
-    char * recvbuf = (char *) malloc(BUFSIZE) ;
+    int n,processed ;
 
-    char * sendbuf = (char *) malloc(BUFSIZE) ;
-    int sendlen ;
-    int buffsize = BUFSIZE ;
-
-    // bzero(recvbuf, BUFSIZE) ;
-
-    sendbuf[0] = 0 ;
-    sendlen = 0 ;
-    while (1) {
-        FD_ZERO(&read_fds);
-        FD_SET(sockfd, &read_fds);
-        maxfd = sockfd;
-
-        processed = 0;
-        while (bufused - processed > 0) {
-            char *nul = memchr(recvbuf + processed, '\0', bufused - processed);
-            if (nul) {
-                char save ;
-                int msglen = nul - (recvbuf + processed);
-                save = recvbuf[processed + msglen];
-                recvbuf[processed + msglen] = 0;
-                sendlen += msglen ; // msglen doesn't count NULL
-                if (sendlen > buffsize) {
-                    buffsize = sendlen + BUFSIZE ;
-                    sendbuf = (char *) realloc(sendbuf, buffsize) ;
-                }
-                strncat(sendbuf, recvbuf + processed, msglen) ;
-                recvbuf[processed + msglen] = save;
-                processed += (msglen + 1) ;
-            } else {
-                break;
-            }
-        }
-
-        if (processed > 0) {
-            if (bufused > processed) {
-                memmove(recvbuf, recvbuf + processed, bufused - processed);
-            }
-            bufused -= processed;
-            processed = 0;
-        }
-
-        if (sendlen > 0 && bufused==0) {
-            id retobj ;
-            retobj = [controller appendTextToAssistantView:sendbuf];
-            sendlen = 0 ;
-            sendbuf[0] = 0 ;
-        }
-
-        if (bufused < BUFSIZE - 1) {
-            if (select(maxfd + 1, &read_fds, NULL, NULL, NULL) < 0) {
-                perror("select");
-                break;
-            }
-            if (FD_ISSET(sockfd, &read_fds)) {
-                n = read(sockfd, recvbuf + bufused, BUFSIZE - 1 - bufused);
-                if (n < 0) {
-                    if (errno == EINTR) continue;
-                    perror("read from socket");
-                    break;
-                } else if (n == 0) {
-                    fprintf(stderr,"Server closed connection.\n");
-                    break;
-                }
-                bufused += n;
-                recvbuf[bufused]=0 ;
-            }
-        }
-
+    n = read(sockfd, recvbuf + bufused, BUFSIZE - 1 - bufused);
+    if (n < 0) {
+        if (errno == EINTR) return ;
+        perror("read from socket");
+        return;
+    } else if (n == 0) {
+        id retobj ;
+        fprintf(stderr,"Server closed connection.\n");
+        retobj = [controller disconnect] ;
+        return;
     }
 
-    close(sockfd);
-    free(recvbuf) ;
+    bufused += n ;
+    recvbuf[bufused]=0 ;
+
+    processed = 0;
+    while (bufused - processed > 0) {
+        char *nul = memchr(recvbuf + processed, '\0', bufused - processed);
+        if (nul) {
+            char save ;
+            int msglen = nul - (recvbuf + processed);
+            save = recvbuf[processed + msglen];
+            recvbuf[processed + msglen] = 0;
+            sendlen += msglen ; // msglen doesn't count NULL
+            if (sendlen > sendbufsize) {
+                sendbufsize = sendlen + BUFSIZE ;
+                sendbuf = (char *) realloc(sendbuf, sendbufsize) ;
+            }
+            strncat(sendbuf, recvbuf + processed, msglen) ;
+            recvbuf[processed + msglen] = save;
+            processed += (msglen + 1) ;
+        } else {
+            break;
+        }
+    }
+
+    if (processed > 0) {
+        if (bufused > processed) {
+            memmove(recvbuf, recvbuf + processed, bufused - processed);
+        }
+        bufused -= processed;
+    }
+
+    if (sendlen > 0) {
+        id retobj ;
+        retobj = [controller appendTextToAssistantView:sendbuf];
+        sendlen = 0 ;
+        sendbuf[0] = 0 ;
+    }
     return ;
 }
 

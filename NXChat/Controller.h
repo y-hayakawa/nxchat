@@ -1,8 +1,8 @@
 /*
   NXChat -- an AI assistant for NEXTSTEP
   Yoshinori Hayakawa
-  2025-08-04
-  Version 0.21
+  2025-08-06
+  Version 0.3
  */
 
 
@@ -33,6 +33,7 @@
 
 - appDidInit:sender ;
 - (BOOL) connect ;
+- disconnect ;
 - appendTextToAssistantView:(const char *) string ;
 - sendPromptToAssistant:sender ;
 - (int) sockfd ;

@@ -31,7 +31,7 @@ char* dbg_markdown_to_rtf(const char *md);
 
     [self setBackgroundGray:NX_WHITE];
     [self setOpaque:YES];
-    // [self notifyAncestorWhenFrameChanged: YES];
+    [self notifyAncestorWhenFrameChanged: YES];
     [self setVertResizable:YES];
     [self setHorizResizable:NO]; // <== needs to be NO
     [self setMinSize:&r.size];
@@ -39,8 +39,8 @@ char* dbg_markdown_to_rtf(const char *md);
     [self setMaxSize:&r.size];
     [self setSelectable:YES] ;
     [self setEditable:NO] ;
-    // [self setRetainedWhileDrawing:YES] ;
-    [self setAutodisplay:NO] ;
+    [self setRetainedWhileDrawing:YES] ;
+    [self setAutodisplay:YES] ;
 
     [self initRTF:self] ;
 
