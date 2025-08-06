@@ -68,7 +68,7 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
 {
     const char *ipaddr, *port ;
 
-    objc_setMultithreaded(YES);
+    // objc_setMultithreaded(YES);
 
     ipaddr = NXGetDefaultValue("NXChat","ServerIP") ;
     port = NXGetDefaultValue("NXChat","ServerPort") ;
@@ -402,7 +402,6 @@ void *my_memchr(const void *s, int c, size_t n)
 
 
 static void socket_handler (int sockfd, void * arg)
-// DPS handler for output from subprocess
 {
     id controller = (Controller *) arg ;
     int n,processed ;
