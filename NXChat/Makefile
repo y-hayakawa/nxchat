@@ -12,7 +12,7 @@ NAME = NXChat
 PROJECTVERSION = 1.1
 JAPANESE = YES
 
-LANGUAGE = Japanese
+LANGUAGE = English
 
 APPICON = nxchat.tiff
 LOCAL_RESOURCES = InfoPanel.nib NXChat.nib PrefPanel.nib

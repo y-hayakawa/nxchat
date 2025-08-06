@@ -277,6 +277,7 @@ char* markdown_to_rtf(const char *md) {
     size_t len = 0;
     const char *p = md;
     BOOL in_code_block = NO;
+    int heading_spaces=0 ;
 
     if (!rtf) return NULL;
 
@@ -301,8 +302,12 @@ char* markdown_to_rtf(const char *md) {
         /* 2) code block */
         if (!in_code_block && (p == md || *(p - 1) == '\n')) {
             const char *t = p;
-            /* skip heading spaces */
-            while (*t == ' ' || *t == '\t') ++t;
+            heading_spaces = 0 ;
+            /* skip & count heading spaces */
+            while (*t == ' ' || *t == '\t') {
+                t++;
+                heading_spaces++ ;
+            }
             /* 3 consecutive backquotes */
             if (t[0]=='`' && t[1]=='`' && t[2]=='`') {
                 const char *scan = t+3;
@@ -321,6 +326,8 @@ char* markdown_to_rtf(const char *md) {
                     p = t + 3;
                     continue;
                 }
+            } else {  // skip heading spaces
+                p = t ;
             }
         }
 
@@ -376,7 +383,7 @@ char* markdown_to_rtf(const char *md) {
         if (!in_code_block &&
             ((*p=='-'||*p=='*') && (p[1]==' '||p[1]=='\t')))
         {
-            len += snprintf(rtf + len, bufsize - len, "\\pard\\li360\\fi0 ");
+            len += snprintf(rtf + len, bufsize - len, "\\pard\\li%d\\fi0 ", 300+heading_spaces*120);
             p += 2;  p = skip_spaces(p);
             while (*p && *p!='\n') {
                 const char *newp = process_inline_formatting(p, rtf, &len, bufsize);
@@ -398,7 +405,7 @@ char* markdown_to_rtf(const char *md) {
             while (*q>='0'&&*q<='9') q++;
             if (*q=='.'&&(q[1]==' '||q[1]=='\t')) {
                 int num = atoi(p);
-                len += snprintf(rtf + len, bufsize - len, "\\pard\\li300\\fi0 %d. ", num);
+                len += snprintf(rtf + len, bufsize - len, "\\pard\\li%d\\fi0 %d. ", 300+heading_spaces*120, num);
                 p = q+1;  p = skip_spaces(p);
                 while (*p && *p!='\n') {
                     const char *newp = process_inline_formatting(p, rtf, &len, bufsize);
@@ -458,5 +465,6 @@ char* markdown_to_rtf(const char *md) {
 #endif
     return rtf;
 }
+
 
 @end
