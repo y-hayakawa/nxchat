@@ -109,7 +109,7 @@ char* dbg_markdown_to_rtf(const char *md);
     // [self calcLine] ;
     // [self sizeToFit] ;
 
-    length = [self byteLength];
+    length = [self charLength];
     [self setSel:length:length] ;
 
     [self scrollSelToVisible] ;

@@ -170,7 +170,7 @@ int inet_aton(const char *cp, struct in_addr *addr) {
 
     [mainWindow setDocEdited:YES] ;
 #if 0
-    length = [text byteLength] ;
+    length = [text charLength] ;
     [text setSel:length :length] ;
     [text replaceSel:out_buffer] ;
 #else
@@ -191,23 +191,23 @@ int inet_aton(const char *cp, struct in_addr *addr) {
 - sendPromptToAssistant:sender
 {
     int n ;
-    int length ;
+    int byte_length ;
     int ret ;
     char *buffer ;
     unsigned char *out_buffer ;
     size_t out_len ;
     id text = [promptScrollView docView] ;
 
-    length = [text byteLength] ;
+    byte_length = [text byteLength] ;
 
-    if (length==0) return self ;
+    if (byte_length==0) return self ;
 
-    buffer = (char *) malloc(sizeof(char)*length+1) ;
+    buffer = (char *) malloc(sizeof(char)*byte_length+1) ;
 
-    buffer[length] = '\0' ;
-    [text getSubstring:buffer start:0 length:length] ;
+    buffer[byte_length] = '\0' ;
+    [text getSubstring:buffer start:0 length:[text charLength]] ;
 
-    ret = eucjp_to_utf8(buffer,length+1, &out_buffer, &out_len) ;
+    ret = eucjp_to_utf8(buffer,byte_length+1, &out_buffer, &out_len) ;
     if (ret<0) {
         perror("character conversion error");
         free(out_buffer) ;
@@ -225,7 +225,7 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     }
 
     // erase prompt
-    [text setSel:0 :length] ;
+    [text setSel:0 :[text charLength]] ;
     [text replaceSel:""] ;
     [text scrollSelToVisible] ;
     [text display] ;
