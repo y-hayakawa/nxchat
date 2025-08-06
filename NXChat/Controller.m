@@ -5,7 +5,6 @@
   Version 0.21
  */
 
-
 #import "Controller.h"
 
 #import "MDText.h"
@@ -31,6 +30,8 @@
 
 static void message_receiver(void *arg) ;
 
+#define NO_DATA 1
+#define DATA_AVAILABLE 2
 
 @implementation Controller
 
@@ -169,18 +170,18 @@ int inet_aton(const char *cp, struct in_addr *addr) {
     }
 
     [mainWindow setDocEdited:YES] ;
-#if 0
+
+#if 0  /* display plain text */
     length = [text charLength] ;
     [text setSel:length :length] ;
     [text replaceSel:out_buffer] ;
-#else
+    [text scrollSelToVisible] ;
+#else  /* convert Markdown to RTF */
     [text appendAsMarkDown:out_buffer] ;
 #endif
 
-    [text display] ;
-
+    [text update] ;
     [[promptScrollView docView] setSel:0:0] ;
-
     [messageTextField setStringValue:""] ;
 
     free(out_buffer) ;

@@ -31,7 +31,7 @@ char* dbg_markdown_to_rtf(const char *md);
 
     [self setBackgroundGray:NX_WHITE];
     [self setOpaque:YES];
-    [self notifyAncestorWhenFrameChanged: YES];
+    // [self notifyAncestorWhenFrameChanged: YES];
     [self setVertResizable:YES];
     [self setHorizResizable:NO]; // <== needs to be NO
     [self setMinSize:&r.size];
@@ -39,9 +39,8 @@ char* dbg_markdown_to_rtf(const char *md);
     [self setMaxSize:&r.size];
     [self setSelectable:YES] ;
     [self setEditable:NO] ;
-    [self setRetainedWhileDrawing:YES] ;
-
-    [self setAutodisplay:YES] ;
+    // [self setRetainedWhileDrawing:YES] ;
+    [self setAutodisplay:NO] ;
 
     [self initRTF:self] ;
 
@@ -90,15 +89,15 @@ char* dbg_markdown_to_rtf(const char *md);
 #endif
 
     NXSeek(buffer,-2L,NX_FROMEND) ;
+
     rtf = markdown_to_rtf(md_string) ;
     // rtf = dbg_markdown_to_rtf(md_string) ;
     //// fputs(rtf,stdout) ;
-    count = strlen(rtf) ;
 
+    count = strlen(rtf) ;
     NXWrite(buffer, rtf, count) ;
     NXPrintf(buffer,"}\n") ;
     NXSeek(buffer,0L,NX_FROMSTART);
-
 #ifdef PLAIN_TEXT
     [self readText:buffer];
 #else
