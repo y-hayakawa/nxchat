@@ -413,9 +413,8 @@ static void socket_handler (int sockfd, void * arg)
         recvbuf = (char *) malloc(BUFSIZE) ;
         sendbuf = (char *) malloc(BUFSIZE) ;
         sendbuf[0]=0 ;
-    } else {
         first_call=NO ;
-    }
+    } 
 
     n = read(sockfd, recvbuf + bufused, BUFSIZE - 1 - bufused);
     if (n < 0) {
