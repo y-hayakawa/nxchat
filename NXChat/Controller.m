@@ -30,12 +30,6 @@
 
 /* socket_hander -------------------------- */
 static void socket_handler(int fd, void *arg) ;
-#define BUFSIZE 65536
-static char * recvbuf ;
-static int bufused ;
-static char * sendbuf ;
-static int sendlen=0 ;
-static int sendbufsize ;
 /* ----------------------------------------- */
 
 @implementation Controller
@@ -79,12 +73,6 @@ void MyTopLevelErrorHandler(NXHandler *errorState)
     server_port = atoi(port) ;
 
     if ([self connect]) {
-        recvbuf = (char *) malloc(BUFSIZE) ;
-        bufused = 0 ;
-        sendbuf = (char *) malloc(BUFSIZE) ;
-        sendbuf[0]=0 ;
-        sendlen = 0 ;
-        sendbufsize = BUFSIZE ;
         DPSAddFD(sockfd, (DPSFDProc) socket_handler, (id) self, NX_MODALRESPTHRESHOLD);
     } else {
         NXRunAlertPanel([NXApp appName],"Cannot connect to the server. Please verify that the server is running and check the settings in Preferences.",0,0,0,0) ;
@@ -406,11 +394,28 @@ void *my_memchr(const void *s, int c, size_t n)
 // Starting from v0.3, I revised the implementation to use a DPS handler 
 // to wait for data from the server.
 
+#define BUFSIZE 65536
+
 static void socket_handler (int sockfd, void * arg)
 // DPS handler for output from subprocess
 {
+    static char * recvbuf = NULL ;
+    static int bufused = 0 ;
+    static char * sendbuf = NULL ;
+    static int sendlen=0 ;
+    static int sendbufsize = BUFSIZE ;
+    static int first_call = YES ;
+
     id controller = (Controller *) arg ;
     int n,processed ;
+
+    if (first_call) {
+        recvbuf = (char *) malloc(BUFSIZE) ;
+        sendbuf = (char *) malloc(BUFSIZE) ;
+        sendbuf[0]=0 ;
+    } else {
+        first_call=NO ;
+    }
 
     n = read(sockfd, recvbuf + bufused, BUFSIZE - 1 - bufused);
     if (n < 0) {
