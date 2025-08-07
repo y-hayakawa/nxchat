@@ -28,9 +28,8 @@
 
 #include "jconv.h"
 
-/* socket_hander -------------------------- */
+
 static void socket_handler(int fd, void *arg) ;
-/* ----------------------------------------- */
 
 @implementation Controller
 
@@ -397,7 +396,6 @@ void *my_memchr(const void *s, int c, size_t n)
 #define BUFSIZE 65536
 
 static void socket_handler (int sockfd, void * arg)
-// DPS handler for output from subprocess
 {
     static char * recvbuf = NULL ;
     static int bufused = 0 ;
