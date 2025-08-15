@@ -54,7 +54,7 @@ It was developed on the Japanese version of NEXTSTEP 3.3 (NEXTSTEP3.3J), so some
 
 Multibyte characters (UTF-8) sent from the server are converted to Japanese EUC-JP encoding on the client side. If a corresponding character cannot be found during conversion, a space character is used as a fallback.
 
-
+<img src="images/screenshot-nxchat.png" alt="Screen shot" width="800">
 
 ## Acknowledgments
 Special thanks to Julie Zelenski for the EmacsText.h and EmacsText.m code, which enables Emacs-style key bindings in the prompt input area.
